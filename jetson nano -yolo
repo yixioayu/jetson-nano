@@ -1,4 +1,4 @@
-#只使用onnx加速的代码，实际跑下来只有2-3帧，还会出现卡死的状态，但是至少可以打开CSI摄像头
+#The code that only uses ONNX acceleration can only run at a speed of 2-3 frames per second. It will even freeze sometimes. However, at least it can open the CSI camera.
 import cv2
 import numpy as np
 import onnxruntime as ort
