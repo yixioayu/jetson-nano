@@ -1,0 +1,67 @@
+#只使用onnx加速的代码，实际跑下来只有2-3帧，还会出现卡死的状态，但是至少可以打开CSI摄像头
+import cv2
+import numpy as np
+import onnxruntime as ort
+
+# CSI 摄像头的 GStreamer 管道
+def gstreamer_pipeline(
+    capture_width=1280, capture_height=720, display_width=1280, display_height=720, framerate=30, flip_method=0
+):
+    return (
+        f"nvarguscamerasrc ! video/x-raw(memory:NVMM), width={capture_width}, height={capture_height}, format=NV12, framerate={framerate}/1 ! "
+        f"nvvidconv flip-method={flip_method} ! video/x-raw, width={display_width}, height={display_height}, format=BGRx ! "
+        f"videoconvert ! video/x-raw, format=BGR ! appsink"
+    )
+
+# 加载 ONNX 模型并指定使用 CUDA 加速
+model_path = "best.onnx"
+providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
+session = ort.InferenceSession(model_path, providers=providers)
+
+# 获取输入和输出名称
+input_name = session.get_inputs()[0].name
+output_name = session.get_outputs()[0].name
+
+# 获取 ONNX 模型的输入尺寸
+onnx_input_shape = session.get_inputs()[0].shape  # (batch, channels, height, width)
+input_h, input_w = onnx_input_shape[2], onnx_input_shape[3]  # 获取 H, W
+if not isinstance(input_h, int) or not isinstance(input_w, int):
+    input_h, input_w = 640, 640  # 默认 640x640
+
+input_shape = (input_w, input_h)  # OpenCV 需要 (W, H)
+
+# 打开 CSI 摄像头
+cap = cv2.VideoCapture(gstreamer_pipeline(), cv2.CAP_GSTREAMER)
+if not cap.isOpened():
+    print("❌ 无法打开 CSI 摄像头")
+    exit()
+
+# 使用 GPU 加速的 OpenCV 图像处理
+gpu_frame = None
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("❌ 无法读取帧")
+        break
+
+    # 将帧从 CPU 内存上传到 GPU
+    gpu_frame = cv2.cuda_GpuMat()
+    gpu_frame.upload(frame)
+
+    # 预处理：GPU 上的图像调整大小
+    gpu_resized_frame = cv2.cuda.resize(gpu_frame, input_shape)
+
+    # 将 GPU 图像下载到 CPU
+    resized_frame = gpu_resized_frame.download()
+
+    # 将图像从 BGR 转为 RGB 格式，并归一化
+    input_data = resized_frame.astype(np.float32) / 255.0
+    input_data = np.transpose(input_data, (2, 0, 1))  # CHW 格式
+    input_data = np.expand_dims(input_data, axis=0)  # 添加 batch 维度
+
+    # 运行推理
+    outputs = session.run([output_name], {input_name: input_data})
+
+    # 解析输出
+    detections = outputs[0]
