@@ -1,8 +1,11 @@
 # jetson-nano视觉任务的模型，摄像头问题
 ## 使用jetson nano遇到的问题
 **1.默认是python3.6.9和python2.7，可以设置成默认的3。6版本**
-**2.在使用摄像头的时候，linux默认是用v4l2进行传输，会发现只能显示用户的屏幕界面，或者绿屏，可能因为没有办法兼容CSI的10bit色深的输出，而默认的是不支持GStreamer管道的
-用cv2.getBuildInformation()发现GStreamer显示的是关闭的，那就需要重新编译opencv，官方支持的opencv可以是4.5版本的,这时候需要重新编译**
+
+**2.在使用摄像头的时候，linux默认是用v4l2进行传输，会发现只能显示用户的屏幕界面，或者绿屏，可能因为没有办法兼容CSI的10bit色深的输出，而默认的是不支持GStreamer管道的**
+
+**用cv2.getBuildInformation()发现GStreamer显示的是关闭的，那就需要重新编译opencv，官方支持的opencv可以是4.5版本的,这时候需要重新编译**
+
 **3.onnx模型会不兼容，信的onnx的模型是IR 9和opset 19，需要降到8和15**
 
 *降低IR版本如下*
