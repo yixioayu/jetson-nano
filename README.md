@@ -85,6 +85,15 @@ sudo ldconfig
 
 编译后的报错，检查相关的依赖是不是齐全，我遇到了编译失败之后，再编译一次，之后出现了相应的报错，解决：https://blog.csdn.net/weixin_52402390/article/details/122341561
 https://blog.csdn.net/layra_liu/article/details/124032893
+第一个报错是：opencvlib408_ml等相关408的库找不到，原因是环境变量配置的问题，解决方法是
+sudo -i
+vim /etc/ld.so.conf.d/opencv.conf
+在这个文件下输入/usr/local/lib就可以解决了，但是每次重启好像都需要输入sudo -i获取管理员权限
+
+第二个报错是：非法指令 (核心已转储)
+这个的原因可能是numpy板子自带了一个版本，自己再下一个版本导致出错了，短暂解决办法就是直接输入下面这个指令
+export OPENBLAS_CORETYPE=ARMV8
+更多的原因就可以看第二个链接：https://blog.csdn.net/layra_liu/article/details/124032893
 
 ###5.一点小错误
 报错resized_frame = cv2.resize(frame,input_shape)   TpyeEooro: an integer is required (got type str)
