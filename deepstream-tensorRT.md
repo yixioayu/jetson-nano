@@ -8,9 +8,12 @@
 
 前三步就是单纯的下载torch&&torchvision&&yolov5，之后用gen_wts.py 脚本转化 yolov5s.pt，中间可能需要加一个-w,不然会报错，下面是安装时遇到的问题
 
-1.首先是yolo，安装依赖项出现问题： gitpython>=3.1.30 可能是版本太高，因此下载3.1.20版本sudo pip3 install gitpython==3.1.20，之后还是报错了，最后发现pip的yolov5支持oython3.7,但是jetson nano默认是3.6.9，那只能通过git下载了。解决办法博客里也有，直接输入
+1.首先是yolo，安装依赖项出现问题： gitpython>=3.1.30 可能是版本太高，因此下载3.1.20版本sudo pip3 install gitpython==3.1.20，之后还是报错了，最后发现pip的yolov5支持oython3.7,但是jetson nano默认是3.6.9，那只能通过git下载了。解决办法上面的文章里也有，直接输入
+
 cd yolov5
+
 pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
+
 注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，这个在第一点就提到过
 其他的库如果版本不对，同理
 
