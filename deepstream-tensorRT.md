@@ -23,8 +23,11 @@ pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
 
 这里是检查版本的代码
 输入 
+
 head -n 1 /etc/nv_tegra_release检查jetpack版本
+
 输入
+
 dpkg -l | grep nvinfer
 
 dpkg -l | grep TensorRT
