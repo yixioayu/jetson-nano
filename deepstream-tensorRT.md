@@ -41,7 +41,7 @@ Torch version: 1.8.0
 >>> print("Torchvision version:", torchvision.__version__)
 Torchvision version: 0.9.0
 
-4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步提到的版本导致的。
+4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步没有配置好导致的
 
 现在yolo，torch，tensorRT，DeepStream已经全部弄好了，就可以运行实例了
 
