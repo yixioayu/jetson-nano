@@ -22,12 +22,11 @@ pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
 我出现了相应的关于tensor lib7的报错，原因是版本下错了，我的JetPack 版本是 4.6.6（R32.7.6），这个版本的默认 TensorRT 版本是 8.2.1，所以下载deepstream 6.0 for jetson nano download.deb，以下是查看版本的代码：
 
 这里是检查版本的代码
-输入 
 
+输入 
 head -n 1 /etc/nv_tegra_release检查jetpack版本
 
 输入
-
 dpkg -l | grep nvinfer
 
 dpkg -l | grep TensorRT
