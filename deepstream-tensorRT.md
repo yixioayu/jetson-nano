@@ -8,7 +8,11 @@
 
 前三步就是单纯的下载torch&&torchvision&&yolov5，之后用gen_wts.py 脚本转化 yolov5s.pt，中间可能需要加一个-w,不然会报错，下面是安装时遇到的问题
 
-1.首先是yolo，安装依赖项出现问题： gitpython>=3.1.30 可能是版本太高，因此下载3.1.20版本sudo pip3 install gitpython==3.1.20，之后还是报错了，最后发现pip的yolov5支持oython3.7,但是jetson nano默认是3.6.9，那只能通过git下载了。
+1.首先是yolo，安装依赖项出现问题： gitpython>=3.1.30 可能是版本太高，因此下载3.1.20版本sudo pip3 install gitpython==3.1.20，之后还是报错了，最后发现pip的yolov5支持oython3.7,但是jetson nano默认是3.6.9，那只能通过git下载了。解决办法博客里也有，直接输入
+cd yolov5
+pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
+注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，这个在第一点就提到过
+其他的库如果版本不对，同理
 
 2.安装deepstream时候，一般pip安装不了，手动去NVIDIA的官网下载https://github.com/marcoslucianops/DeepStream-Yolo
 ，一直往下翻，找到对应的版本，一般就是DeepStream 5.1 on Jetson platform，点击NVIDIA DeepStream SDK 5.1，之后登录就可以了,之后将下载好的文件传输给nano
@@ -29,8 +33,11 @@ Torch version: 1.8.0
 >>> print("Torchvision version:", torchvision.__version__)
 Torchvision version: 0.9.0
 
+4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步提到的版本导致的。
 
-4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步提到的版本导致的，那怎么办呢，我先去睡觉了，下午再写
+现在yolo，torch，tensorRT，DeepStream已经全部弄好了，就可以运行实例了
+
+5.其他问题，在README中提到的libopencv_ml.so.408的问题，会发现如果我用sudo -i的命令之后，我的torch库等等都找不到了，但是不用管理员身份的话，在安装yolo的时候没有办法检测到yolo的版本
 
 
 
