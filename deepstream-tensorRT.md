@@ -14,8 +14,7 @@ cd yolov5
 
 pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
 
-注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，这个在第一点就提到过
-其他的库如果版本不对，同理
+注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，其他的库如果版本不对，同理，更改文件的内容
 
 2.安装deepstream时候，一般pip安装不了，手动去NVIDIA的官网下载https://github.com/marcoslucianops/DeepStream-Yolo
 ，一直往下翻，找到对应的版本，一般就是DeepStream 5.1 on Jetson platform，点击NVIDIA DeepStream SDK 5.1，之后登录就可以了,之后将下载好的文件传输给nano
