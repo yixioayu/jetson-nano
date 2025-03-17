@@ -22,10 +22,14 @@ pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
 我出现了相应的关于tensor lib7的报错，原因是版本下错了，我的JetPack 版本是 4.6.6（R32.7.6），这个版本的默认 TensorRT 版本是 8.2.1，所以下载deepstream 6.0 for jetson nano download.deb，以下是查看版本的代码：
 
 这里是检查版本的代码
-输入 head -n 1 /etc/nv_tegra_release检查jetpack版本
-输入dpkg -l | grep nvinfer
-    dpkg -l | grep TensorRT
-    dpkg -l | grep cuda检查cuda，tensorRT版本
+输入 
+head -n 1 /etc/nv_tegra_release检查jetpack版本
+输入
+dpkg -l | grep nvinfer
+
+dpkg -l | grep TensorRT
+
+dpkg -l | grep cuda检查cuda，tensorRT版本
 
 3.下载相应的pytorch  wget https://nvidia.box.com/shared/static/p57jwntjlbm0c3wll2l58a7z7c1z04w6.whl -O torch-1.10.0-cp36-cp36m-linux_aarch64.whl
 pip3 install torch-1.10.0-cp36-cp36m-linux_aarch64.whl   按理说应该是对应的是1.10.0版本，但是jetson设备上默认是1.8.0，估计是更兼容了，先试试看,
