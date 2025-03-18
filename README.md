@@ -91,7 +91,8 @@ https://blog.csdn.net/layra_liu/article/details/124032893
 第一个报错是：opencvlib408_ml等相关408的库找不到，原因是环境变量配置的问题，解决方法是
 sudo -i
 vim /etc/ld.so.conf.d/opencv.conf
-在这个文件下输入/usr/local/lib就可以解决了，但是每次重启好像都需要输入sudo -i获取管理员权限
+在这个文件下输入/usr/local/lib就可以解决了，但是每次重启好像都需要输入sudo -i获取管理员权限，
+这个报错的原因是因为 /usr/local/lib/python3.6/site-packages/是公共库，/home/jetson/.local/lib/python3.6/site-packages是用户库，导致最后环境出错，彻底解决方法，把公共环境下的cv.so文件备份到其他文件（或者直接删除）
 
 第二个报错是：非法指令 (核心已转储)
 这个的原因可能是numpy板子自带了一个版本，自己再下一个版本导致出错了，短暂解决办法就是直接输入下面这个指令
