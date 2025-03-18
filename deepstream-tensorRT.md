@@ -14,7 +14,7 @@ cd yolov5
 
 pip3 install -r requirements.txt -i https://mirror.baidu.com/pypi/sample
 
-注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，其他的库如果版本不对，同理，更改文件的内容
+注意可能会有关于thop库缺少的报错，这时候如果有相应的 gitpython>=3.1.30报错，就nano requirements.txt文件，将gitpython的版本改成新安装的旧版本，其他的库如果版本不对，同理，更改文件的内容，但是这个方法可以说是蒙混过关的方法，有可能明明版本是符合的，但是还是报错，那可能是因为yolo源码的版本不对，由于yolov5-6.1及以上版本已不再支持python3.6，而jetson nano的pytorch包最高支持版本为python3.6，所以只能下载6.0及以下版本，否则会出现报错。
 
 2.安装deepstream时候，一般pip安装不了，手动去NVIDIA的官网下载https://github.com/marcoslucianops/DeepStream-Yolo
 ，一直往下翻，找到对应的版本，一般就是DeepStream 5.1 on Jetson platform，点击NVIDIA DeepStream SDK 5.1，之后登录就可以了,之后将下载好的文件传输给nano
@@ -43,9 +43,14 @@ Torchvision version: 0.9.0
 
 4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步没有配置好导致的
 
-现在yolo，torch，tensorRT，DeepStream已经全部弄好了，就可以运行实例了
+5.其他问题，在README中提到的libopencv_ml.so.408的问题，会发现如果我用sudo -i的命令之后，我的torch库等等都找不到了，但是不用管理员身份的话，在安装yolo的时候没有办法检测到opencv的版本，这是因为 /usr/local/lib/python3.6/site-packages/是公共库，/home/jetson/.local/lib/python3.6/site-packages是用户库，导致最后环境出错，解决方法，把公共环境下的cv.so文件备份到其他文件（或者直接删除）
 
-5.其他问题，在README中提到的libopencv_ml.so.408的问题，会发现如果我用sudo -i的命令之后，我的torch库等等都找不到了，但是不用管理员身份的话，在安装yolo的时候没有办法检测到yolo的版本
+mv .local/lib/python3.6/site-packages/cv2.cpython-36m-aarch64-linux-gnu.so .local/lib/python3.6/site-packages/cv2.cpython-36m-aarch64-linux-gnu.so.bak
+这个时候库的问题就解决了
+
+6.现在yolo，torch，tensorRT，DeepStream已经全部弄好了，就可以运行实例了
+
+
 
 
 
