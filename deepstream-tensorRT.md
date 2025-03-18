@@ -1,10 +1,12 @@
 #在使用deepstream-tensorRT加速的问题
 首先就是模型转化的问题，这个找到trtexec相应的路劲，使用trtexec将onnx转化成engine模型
 
-由于电脑上更好测试模型，并且转化也不用占用板子的存储（我的jetson nano磁盘占用了92%），所以onnx模型是在电脑上从pt模型转化的，直接在jetson nano上转化成engine模型的话，很容易遇到问题：维度不兼容导致转化失败，或者onnx模型是INT64,但是transform最高只支持INT32，还有动态维度问题
+由于电脑上更好测试模型，并且转化也不用占用板子的存储（我的jetson nano磁盘占用了92%），所以onnx模型是在电脑上从pt模型转化的，直接在jetson nano上转化成engine模型的话，很容易遇到问题：维度不兼容导致转化失败，或者onnx模型是INT64,但是transform最高只支持INT32，还有动态维度问题，并且要求tuoch版本yolo版本都必须一样
 
 先在windows下转化成INT32，在转化的过程中，可以用netorn可视化模型之后，观察报错的地方的参数，比如Concat 层的输入维度不兼容，显示的是/model.11/Concat: dimensions not compatible for concatenation，也就是model.11出现了问题，看了一下果然是int64类型
-还有一个报错 Error Code 2: Internal Error (Assertion enginePtr != nullptr failed. 那么这个可能就是onnx有int64，如果没有的话，那还可能是我在README.md中提到的，其默认支持的onnx的opset是12版本，而我的是15版本的（jetson nano支持的最高版本），目前最高的已经是18版本（官方最高版本），那这种我想的是重新转化了，但是我发现重新转化之后还是会有版本不兼容的问题，那就需要其他方法了，比如参考这篇文章：https://blog.csdn.net/qq_56548850/article/details/124256112?ops_request_misc=%257B%2522request%255Fid%2522%253A%252248c861846b38a13c0deee333bd9dcfb8%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=48c861846b38a13c0deee333bd9dcfb8&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-124256112-null-null.142^v102^pc_search_result_base2&utm_term=jetson%20nano%20deepstream%E5%AE%89%E8%A3%85&spm=1018.2226.3001.4187 
+还有一个报错 Error Code 2: Internal Error (Assertion enginePtr != nullptr failed. 那么这个可能就是onnx有int64，如果没有的话，那还可能是我在README.md中提到的，其默认支持的onnx的opset是12版本，而我的是15版本的（jetson nano支持的最高版本），目前最高的已经是18版本（官方最高版本），那这种我想的是重新转化了，但是我发现重新转化之后还是会有版本不兼容的问题
+
+综上所述，还是老老实实在nano上弄吧，参考这篇文章：https://blog.csdn.net/qq_56548850/article/details/124256112?ops_request_misc=%257B%2522request%255Fid%2522%253A%252248c861846b38a13c0deee333bd9dcfb8%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=48c861846b38a13c0deee333bd9dcfb8&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-124256112-null-null.142^v102^pc_search_result_base2&utm_term=jetson%20nano%20deepstream%E5%AE%89%E8%A3%85&spm=1018.2226.3001.4187 
 
 前三步就是单纯的下载torch&&torchvision&&yolov5，之后用gen_wts.py 脚本转化 yolov5s.pt，中间可能需要加一个-w,不然会报错，下面是安装时遇到的问题
 
@@ -41,7 +43,12 @@ Torch version: 1.8.0
 >>> print("Torchvision version:", torchvision.__version__)
 Torchvision version: 0.9.0
 
-4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，又但是python检测却没办法引用，那应该还是第一点安装yolo那一步没有配置好导致的
+4.转化模型的时候python3 gen_wts.py -w best.pt 会发现没有对应的ultralytics库，但是之前是下载过yolov5的，并且用ls查看一下yolov5也是正确的，第一是yolov5的版本需要正确，是python3.6最高只能支持yolov5-6.0，还有就是我们的代码/脚本没有放在ultralytics文件夹同级目录下时，这时候会报错ModuleNotFoundError: No module named 'ultralytics，但是注意在yolov5-6.0的时候，是没有ultralytics的文件，相对应得文件叫utils，还有一种可能，就是模型是yolov8的，yolov8需要ultarlytics
+
+解决办法：导入模型前输入
+
+import sys
+sys.path.append('/home/jetson/yolov5-6.0')
 
 5.其他问题，在README中提到的libopencv_ml.so.408的问题，会发现如果我用sudo -i的命令之后，我的torch库等等都找不到了，但是不用管理员身份的话，在安装yolo的时候没有办法检测到opencv的版本，这是因为 /usr/local/lib/python3.6/site-packages/是公共库，/home/jetson/.local/lib/python3.6/site-packages是用户库，导致最后环境出错，解决方法，把公共环境下的cv.so文件备份到其他文件（或者直接删除）
 
